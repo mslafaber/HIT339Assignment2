@@ -1,0 +1,14 @@
+﻿
+@if (User.IsInRole("Coach"))
+{
+    <h1>You don't have a profile yet<br /></h1>
+
+    <a asp-action="Create">Click here to create a new one!</a>
+}
+else
+{ 
+    <h1>The coach does not have a profile!</h1>
+
+}
+
+

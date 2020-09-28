@@ -1,0 +1,83 @@
+﻿
+@model Tuple<IEnumerable<InhouseMembership.Models.Schedule>, IEnumerable<InhouseMembership.Models.Enrollment>>
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Enrollments</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <!-- show the schedules that will be hosted by current coach logged in  -->
+            <th>
+                Schedule Name
+            </th>
+            <th>
+                Enrolled Members
+            </th>
+        </tr>
+    </thead>
+    <!-- if the user is an admin, show all the schedule and enrolled members -->
+    @if (User.IsInRole("Admin"))
+    {
+        <tbody>
+            @foreach (var item1 in Model.Item1)
+            {
+
+                @foreach (var item2 in Model.Item2)
+                {
+                    @if (item2.ScheduleId == item1.ScheduleId)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item1.EventName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => UserManager.FindByIdAsync(item2.MemberId).Result.UserName)
+                            </td>
+                        </tr>
+                    }
+
+                }
+            }
+        </tbody>
+
+    }
+    else if (User.IsInRole("Coach"))
+    {
+        <!-- if the user is a coach, only show the upcoming schedules that are hosted by him and members enrolled to those schedules -->
+
+        <tbody>
+            @foreach (var item1 in Model.Item1)
+            {
+                @if (item1.CoachId == UserManager.GetUserId(User))
+                {
+                    @foreach (var item2 in Model.Item2)
+                    {
+                        @if (item2.ScheduleId == item1.ScheduleId)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item1.EventName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => UserManager.FindByIdAsync(item2.MemberId).Result.UserName)
+                                </td>
+                            </tr>
+                        }
+
+                    }
+
+                }
+
+            }
+        </tbody>
+    }
+
+</table>

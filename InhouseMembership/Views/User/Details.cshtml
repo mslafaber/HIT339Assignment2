@@ -1,0 +1,47 @@
+﻿@model InhouseMembership.Models.ApplicationUser
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Member</h4>
+    <hr />
+    <dl class="row">
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.UserName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.UserName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.PhoneNumber)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.PhoneNumber)
+        </dd>
+    </dl>
+</div>
+<!-- If the selected user is a coach, show the option to display the coach profile -->
+
+
+
+<div>
+    @if (UserManager.GetRolesAsync(UserManager.FindByIdAsync(Model.Id).Result).Result.FirstOrDefault() == "Coach")
+    {
+        <a asp-action="CoachProfile" asp-route-id="@Model.Id">(Click the name to see the profile >) Coach Profile</a>
+    }
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+</div>
+

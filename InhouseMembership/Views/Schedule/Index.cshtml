@@ -1,0 +1,87 @@
+﻿@model IEnumerable<InhouseMembership.Models.Schedule>
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@{ 
+    DateTime currentTime = DateTime.Now;
+}
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Schedules</h1>
+<!-- If the current user is admin, show create new schedule -->
+@if (User.IsInRole("Admin"))
+{
+    <h3>
+        <a asp-action="Create">New Schedule</a>
+    </h3>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+          
+            <th>
+                @Html.DisplayNameFor(model => model.EventName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EventDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Location)
+            </th>
+            <th>
+                Coach Name
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.EventName)
+                </td>
+                <!-- if the event time is before current time, the event is over and can no longer be enrolled -->
+                @if (item.EventDate <= currentTime)
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EventDate)
+                        (This event has ended!)
+                    </td>
+                }
+                else {            
+                    <td>             
+                        @Html.DisplayFor(modelItem => item.EventDate)
+                    </td>           
+                }
+            
+                <td>
+                    @Html.DisplayFor(modelItem => item.Location)
+                </td>
+                <td>
+                    @UserManager.FindByIdAsync(item.CoachId).Result.UserName
+                </td>
+                <!-- if the user is admin, show CRUD options -->
+                @if (User.IsInRole("Admin"))
+                {
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.ScheduleId">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.ScheduleId">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.ScheduleId">Delete</a>
+                    </td>       
+                }
+                else { 
+                    <td>                   
+                        <a asp-action="Details" asp-route-id="@item.ScheduleId">Details</a>                   
+                    </td>
+                }          
+            </tr>
+        }
+    </tbody>
+</table>
